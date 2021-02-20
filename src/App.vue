@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <keep-alive>
+    <keep-alive exclude="Detail">
       <router-view/>
     </keep-alive>
   </div>
@@ -16,6 +16,4 @@ export default {
 </script>
 
 <style lang="stylus">
-#app
-  overflow-y scroll
 </style>

@@ -42,7 +42,7 @@
       <div class="title">
         热销推荐
       </div>
-      <div class="recommend-item" v-for="item in recommendList" :key="item.id" >
+      <div class="recommend-item" v-for="item in recommendList" :key="item.id" @click="toDetail(item.id)" >
         <div class="recommend-item-img">
           <img :src="item.imgUrl" alt="">
         </div>
@@ -110,6 +110,9 @@ export default {
     },
     cityClick() {
       this.$router.push('/city')
+    },
+    toDetail(id) {
+      this.$router.push(`detail/${id}`)
     }
   },
   computed: {
