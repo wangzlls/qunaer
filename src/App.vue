@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view><test-vant/></router-view>
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
@@ -14,6 +16,6 @@ export default {
 </script>
 
 <style lang="stylus">
-  #app
-    overflow-y scroll
+#app
+  overflow-y scroll
 </style>

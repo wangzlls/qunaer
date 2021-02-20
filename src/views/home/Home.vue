@@ -14,11 +14,11 @@
           </div>
         </div>
       </div>
-      <div class="header-right">
+      <div class="header-right" @click="cityClick">
         <div class="header-place">
-          北京
+          {{ this.city }}
         </div>
-        <div class="place-icon">
+        <div class="place-icon" style="padding-left: 2px">
           <van-icon name="arrow-down" size="10" />
         </div>
       </div>
@@ -76,21 +76,24 @@
         </div>
       </div>
     </div>
+    <div class="fake"></div>
   </div>
 </template>
 
 <script>
 // import { getHomeInfo } from '@/service/home'
+import { mapState } from 'vuex'
 import axios from 'axios'
 export default {
   name: 'Home',
   components: {},
   data() {
     return {
+      lastCity: '',
       swiperList: [],
       iconList: [],
       recommendList: [],
-      weekendList: []
+      weekendList: [],
     }
   },
   created() {
@@ -98,13 +101,30 @@ export default {
   },
   methods: {
     getHome() {
-      axios.get(`/api/index.json`).then((res) => {
-        console.log(res.data.data)
+      axios.get(`/api/index.json?city=${this.city}`).then((res) => {
         this.swiperList = res.data.data.swiperList
         this.iconList = res.data.data.iconList
         this.recommendList = res.data.data.recommendList
         this.weekendList = res.data.data.weekendList
       })
+    },
+    cityClick() {
+      this.$router.push('/city')
+    }
+  },
+  computed: {
+    ...mapState(['city'])
+  },
+  mounted() {
+    this.lastCity = this.city
+    this.getHome()
+  },
+  // 由于有 keep-alive 的保存机制，需要以下判断
+  // 定位标识，如果lastCity != this.city时，执行以下方法
+  activated() {
+    if (this.lastCity !== this.city) {
+      this.lastCity = this.city
+      this.getHome()
     }
   }
 }
@@ -223,4 +243,6 @@ export default {
           border none
           border-radius 10px
           color #fff
+  .fake
+    height 30px
 </style>
