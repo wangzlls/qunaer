@@ -57,6 +57,7 @@ export default {
     left 0
     right 0
     background-color #000
+    z-index 2
     .van-swipe
       overflow visible
     .my-swipe

@@ -9,33 +9,44 @@
       </div>
     </div>
     <div class="detail-banner" @click="bannerClick">
-      <img class="detail-banner-img" src="http://img1.qunarzz.com/sight/p0/201404/23/04b92c99462687fa1ba45c1b5ba4ad77.jpg_600x330_bf9c4904.jpg" alt="">
+      <img class="detail-banner-img" :src="bannerImg" alt="">
       <div class="detail-back" v-show="!headerShow" @click="backClick">
         <van-icon name="arrow-left" size="40" />
       </div>
       <div class="banner-info">
         <div class="banner-info-title">
-          大连圣亚海洋世界(AAAA景区)
+          {{ sightName }}
         </div>
         <div class="banner-info-num">
           <div class="banner-img"><van-icon name="photo-o" size="15" /></div>
-          <div class="banner-num">39</div>
+          <div class="banner-num">
+            {{ imgs.length }}
+          </div>
         </div>
       </div>
     </div>
-    <gallery v-if="galleryShow" :imgs="imgs" @swiperClick="swiperClick" />
-    <div class="fake-box"></div>
+    <fade-animation>
+      <gallery v-if="galleryShow" :imgs="imgs" @swiperClick="swiperClick" />
+    </fade-animation>
+    <div class="content-list">
+      <detail-list :list="categoryList"></detail-list>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import Gallery from '@/commom/gallery/Gallery.vue'
+import FadeAnimation from '@/commom/fade/FadeAnimation.vue'
+import DetailList from './List'
 export default {
   name: 'Detail',
   data() {
     return {
-      imgs: ['http://img1.qunarzz.com/sight/p0/201404/23/04b92c99462687fa1ba45c1b5ba4ad77.jpg_800x800_70debc93.jpg', 
-      'http://img1.qunarzz.com/sight/p0/1709/76/7691528bc7d7ad3ca3.img.png_800x800_9ef05ee7.png'],
+      bannerImg: '',
+      imgs: [],
+      sightName: '',
+      categoryList: [],
       galleryShow: false,
       headerShow: false,
       opacityStyle: {
@@ -44,7 +55,9 @@ export default {
     }
   },
   components: {
-    Gallery
+    Gallery,
+    DetailList,
+    FadeAnimation
   },
   methods: {
     swiperClick() {
@@ -72,6 +85,13 @@ export default {
     document.documentElement.scrollTop = 0
   },
   mounted() {
+    let city = this.$route.params.id
+    axios.get(`/api/detail.json?city=${city}`).then((res) => {
+      this.imgs = res.data.data.gallaryImgs
+      this.bannerImg = res.data.data.bannerImg
+      this.sightName = res.data.data.sightName
+      this.categoryList = res.data.data.categoryList
+    })
     window.addEventListener('scroll', this.handleScroll)
   },
   destroyed() {
@@ -156,7 +176,8 @@ export default {
           height 25px
           line-height 28px
           padding-right 5px
-  .fake-box
+  .content-list
     width 100%
     height 800px
+    padding-top 10px
 </style>
