@@ -23,65 +23,70 @@
         </div>
       </div>
     </div>
-    <div class="swiper">
-      <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-        <van-swipe-item v-for="item in swiperList" :key="item.id">
-          <img :src="item.imgUrl" />
-        </van-swipe-item>
-      </van-swipe>
-    </div>
-    <div class="gird">
-      <van-grid :gutter="0" :border="false" :clickable="true">
-        <van-grid-item v-for="item in iconList" :key="item.id">
-          <van-image width="50" height="50" :src="item.imgUrl" />
-          <span>{{ item.desc }}</span>
-        </van-grid-item>
-      </van-grid>
-    </div>
-    <div class="recommend">
-      <div class="title">
-        热销推荐
-      </div>
-      <div class="recommend-item" v-for="item in recommendList" :key="item.id" @click="toDetail(item.id)" >
-        <div class="recommend-item-img">
-          <img :src="item.imgUrl" alt="">
+    <div class="scroll-wrapper" ref="scroll">
+      <div class="scroll-content">
+        <div class="swiper">
+          <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+            <van-swipe-item v-for="item in swiperList" :key="item.id">
+              <img :src="item.imgUrl" />
+            </van-swipe-item>
+          </van-swipe>
         </div>
-        <div class="recommend-item-dec">
-          <p class="recommend-item-title">
-            {{ item.title }}
-          </p> 
-          <p class="recommend-item-desc">
-            {{ item.desc }}
-          </p>
-          <button class="detail">查看详情</button>
+        <div class="gird">
+          <van-grid :gutter="0" :border="false" :clickable="true">
+            <van-grid-item v-for="item in iconList" :key="item.id">
+              <van-image width="50" height="50" :src="item.imgUrl" />
+              <span>{{ item.desc }}</span>
+            </van-grid-item>
+          </van-grid>
         </div>
+        <div class="recommend">
+          <div class="title">
+            热销推荐
+          </div>
+          <div class="recommend-item" v-for="item in recommendList" :key="item.id" @click="toDetail(item.id)" >
+            <div class="recommend-item-img">
+              <img :src="item.imgUrl" alt="">
+            </div>
+            <div class="recommend-item-dec">
+              <p class="recommend-item-title">
+                {{ item.title }}
+              </p> 
+              <p class="recommend-item-desc">
+                {{ item.desc }}
+              </p>
+              <button class="detail">查看详情</button>
+            </div>
+          </div>
+        </div>
+        <div class="weekend">
+          <div class="title">
+            周末去哪儿
+          </div>
+          <div class="recommend-item" v-for="item in weekendList" :key="item.id">
+            <div class="weekend-item-img">
+              <img :src="item.imgUrl" alt="" />
+            </div>
+            <div class="weekend-item-dec">
+              <p class="weekend-item-title">
+                {{ item.title }}
+              </p> 
+              <p class="weekend-item-desc">
+                {{ item.desc }}
+              </p>
+              <button class="detail">查看详情</button>
+            </div>
+          </div>
+        </div>
+        <div class="fake"></div>
       </div>
     </div>
-    <div class="weekend">
-      <div class="title">
-        周末去哪儿
-      </div>
-      <div class="recommend-item" v-for="item in weekendList" :key="item.id" >
-        <div class="weekend-item-img">
-          <img :src="item.imgUrl" alt="">
-        </div>
-        <div class="weekend-item-dec">
-          <p class="weekend-item-title">
-            {{ item.title }}
-          </p> 
-          <p class="weekend-item-desc">
-            {{ item.desc }}
-          </p>
-          <button class="detail">查看详情</button>
-        </div>
-      </div>
-    </div>
-    <div class="fake"></div>
   </div>
 </template>
 
 <script>
 // import { getHomeInfo } from '@/service/home'
+import BScroll from '@better-scroll/core'
 import { mapState } from 'vuex'
 import axios from 'axios'
 export default {
@@ -94,10 +99,8 @@ export default {
       iconList: [],
       recommendList: [],
       weekendList: [],
+      timer: null
     }
-  },
-  created() {
-    this.getHome()
   },
   methods: {
     getHome() {
@@ -112,7 +115,11 @@ export default {
       this.$router.push('/city')
     },
     toDetail(id) {
-      this.$router.push(`detail/${id}`)
+      this.$router.push(`/detail/${id}`)
+    },
+    scrollReLoad() {
+      console.log(111)
+      this.bs.refresh()
     }
   },
   computed: {
@@ -125,10 +132,22 @@ export default {
   // 由于有 keep-alive 的保存机制，需要以下判断
   // 定位标识，如果lastCity != this.city时，执行以下方法
   activated() {
+    this.timer = setInterval(() => {
+      this.bs = new BScroll(this.$refs.scroll)
+      this.bs.refresh()
+      if (document.readyState === 'complete') {
+        clearInterval(this.timer)
+        console.log('timer-->>', this.timer)
+      }
+    }, 500)
     if (this.lastCity !== this.city) {
       this.lastCity = this.city
       this.getHome()
     }
+  },
+  beforeDestroy() {
+    console.log('beforeDestroy')
+    clearInterval(this.timer)
   }
 }
 </script>
@@ -164,6 +183,24 @@ export default {
       display flex
       padding 10px
       color #fff
+  .scroll-wrapper
+    position absolute
+    overflow hidden
+    top 40px
+    left 0
+    right 0
+    bottom 0
+    .scroll-item
+      height 50px
+      line-height 50px
+      font-size 24px
+      font-weight bold
+      border-bottom 1px solid #eee
+      text-align center
+      &:nth-child(2n)
+        background-color #f3f5f7
+      &:nth-child(2n+1)
+        background-color #42b983
   .gird >>> .van-grid-item__content
     padding 5px 8px
     span

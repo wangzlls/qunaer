@@ -16,6 +16,10 @@ const routes = [
     path: '/detail/:id',
     name: 'Detail',
     component: () => import('../views/detail/Detail.vue')
+  }, {
+    path: '/scroll',
+    name: 'Scroll',
+    component: () => import('../views/scroll/Scroll.vue')
   }
 ]
 

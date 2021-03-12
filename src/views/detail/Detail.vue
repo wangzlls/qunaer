@@ -100,7 +100,6 @@ export default {
   }
 }
 </script>
-
 <style lang="stylus" scoped>
   .header
     width 100%
